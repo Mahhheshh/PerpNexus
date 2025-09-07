@@ -1,16 +1,19 @@
 use anchor_lang::prelude::*;
 
-declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
+mod instructions;
+mod state;
+
+use instructions::*;
+use state::*;
+
+declare_id!("BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9");
 
 #[program]
 pub mod PerpNexus {
     use super::*;
 
-    pub fn greet(_ctx: Context<Initialize>) -> Result<()> {
-        msg!("GM!");
+    pub fn init_perp_config(ctx: Context<InitConfig>, cranker: Pubkey, fees: u16) -> Result<()> {
+        ctx.accounts.init_config(cranker, fees, &ctx.bumps)?;
         Ok(())
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}

@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-PerpNexus = "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H"
+PerpNexus = "BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1,36 +1,19 @@
 import {
+  Address,
   Blockhash,
   createSolanaClient,
   createTransaction,
+  generateKeyPairSigner,
   Instruction,
   KeyPairSigner,
+  getProgramDerivedAddress,
   signTransactionMessageWithSigners,
 } from 'gill'
-import { getGreetInstruction } from '../src'
-// @ts-ignore error TS2307 suggest setting `moduleResolution` but this is already configured
+import { fetchPerpNexusConfig, getInitPerpConfigInstruction, getPerpNexusProgramId } from '../src'
 import { loadKeypairSignerFromFile } from 'gill/node'
+import { describe, it, expect, beforeAll } from 'vitest'
 
 const { rpc, sendAndConfirmTransaction } = createSolanaClient({ urlOrMoniker: process.env.ANCHOR_PROVIDER_URL! })
-describe('PerpNexus', () => {
-  let payer: KeyPairSigner
-
-  beforeAll(async () => {
-    payer = await loadKeypairSignerFromFile(process.env.ANCHOR_WALLET!)
-  })
-
-  it('should run the program and print "GM!" to the transaction log', async () => {
-    // ARRANGE
-    expect.assertions(1)
-    const ix = getGreetInstruction()
-
-    // ACT
-    const sx = await sendAndConfirm({ ix, payer })
-
-    // ASSERT
-    expect(sx).toBeDefined()
-    console.log('Transaction signature:', sx)
-  })
-})
 
 // Helper function to keep the tests DRY
 let latestBlockhash: Awaited<ReturnType<typeof getLatestBlockhash>> | undefined
@@ -51,5 +34,42 @@ async function sendAndConfirm({ ix, payer }: { ix: Instruction; payer: KeyPairSi
     latestBlockhash: await getLatestBlockhash(),
   })
   const signedTransaction = await signTransactionMessageWithSigners(tx)
-  return await sendAndConfirmTransaction(signedTransaction)
+  return await sendAndConfirmTransaction(signedTransaction, {
+    skipPreflight: true,
+    commitment: 'confirmed'
+  })
 }
+
+
+describe('PerpNexus', () => {
+  let payer: KeyPairSigner
+  let cranker: KeyPairSigner;
+  let config: Address;
+  let protocolVault: Address;
+  let programAddress = getPerpNexusProgramId('solana:localnet');
+
+  beforeAll(async () => {
+    payer = await loadKeypairSignerFromFile(process.env.ANCHOR_WALLET!);
+    cranker = await generateKeyPairSigner();
+
+    [config] = await getProgramDerivedAddress({ programAddress, seeds: ["config"] });
+    [protocolVault] = await getProgramDerivedAddress({ programAddress, seeds: ["vault"] })
+  })
+
+  it('should init config', async () => {
+    const initPerpIx = getInitPerpConfigInstruction({
+      admin: payer,
+      cranker: cranker.address,
+      config,
+      protocolVault,
+      fees: 0,
+    });
+
+    await sendAndConfirm({ ix: initPerpIx, payer });
+    let configAccount = await fetchPerpNexusConfig(rpc, config);
+
+    expect(configAccount.data.admin).toBe(payer.address);
+    expect(configAccount.data.fees.toString()).toBe("0");
+    expect(configAccount.data.cranker).toBe(cranker.address);
+  })
+})
