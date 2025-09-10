@@ -1,87 +1,158 @@
-# PerpNexus
+# PerpNexus 🚀
 
-This is a Next.js app containing:
+A decentralized perpetual futures trading platform built on Solana, featuring leveraged trading with Pyth Network price feeds integration.
 
-- Tailwind CSS setup for styling
-- Useful wallet UI elements setup using [Gill](https://gill.site/)
-- A basic Greeter Solana program written in Anchor
-- UI components for interacting with the Greeter program
+## 🚀 Getting Started
 
-## Getting Started
+### Prerequisites
+
+- Node.js 18+ and npm/yarn/pnpm
+- Rust and Cargo
+- Solana CLI tools
+- Anchor CLI
 
 ### Installation
 
-#### Download the template
+1. **Clone the repository**
 
-```shell
-pnpm create solana-dapp@latest -t gh:solana-foundation/templates/gill/PerpNexus
+```bash
+git clone https://github.com/Mahhheshh/PerpNexus.git
+cd PerpNexus
 ```
 
-#### Install Dependencies
+2. **Install dependencies**
 
-```shell
-pnpm install
+```bash
+yarn install
 ```
 
-## Apps
+3. **Setup the Anchor program**
 
-### anchor
-
-This is a Solana program written in Rust using the Anchor framework.
-
-#### Commands
-
-You can use any normal anchor commands. Either move to the `anchor` directory and run the `anchor` command or prefix the
-command with `pnpm`, eg: `pnpm anchor`.
-
-#### Sync the program id:
-
-Running this command will create a new keypair in the `anchor/target/deploy` directory and save the address to the
-Anchor config file and update the `declare_id!` macro in the `./src/lib.rs` file of the program. This will also update
-the constant in `anchor/src/basic-exports.ts` file.
-
-```shell
-pnpm run setup
+```bash
+npm run setup
 ```
 
-#### Build the program:
+## 📦 Available Scripts
 
-```shell
-pnpm anchor-build
+### Development Commands
+
+```bash
+# Start the frontend
+npm run dev
+
+# Build the application
+npm run build
+
+# Start production server
+npm start
 ```
 
-#### Start the test validator with the program deployed:
+### Anchor/Solana Commands
 
-```shell
-pnpm anchor-localnet
+```bash
+# Build the Solana program
+npm run anchor-build
+
+# Start local validator with program deployed
+npm run anchor-localnet
+
+# Run program tests
+npm run anchor-test
+
+# Run tests without starting validator
+npm run anchor-test-skip-val
+
+# Generate TypeScript client
+npm run codama:js
 ```
 
-#### Run the tests
+### Code Quality Commands
 
-```shell
-pnpm anchor-test
+```bash
+# Run linting
+npm run lint
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Run all CI checks
+npm run ci
 ```
 
-#### Deploy to Devnet
+## 🏗️ Project Structure
 
-```shell
-pnpm anchor deploy --provider.cluster devnet
+```
+├── anchor/                     # Solana program
+│   ├── programs/PerpNexus/     # Main program code
+│   │   └── src/
+│   │       ├── lib.rs          # Program entry point
+│   │       ├── instructions/   # Program instructions
+│   │       └── state/          # Program state definitions
+│   ├── tests/                  # Program tests
+│   └── target/                 # Build artifacts
+├── src/                        # Next.js application
+│   ├── app/                    # App Router pages
+│   ├── components/             # Reusable UI components
+│   ├── features/               # Feature-specific components
+│   └── lib/                    # Utility functions
+└── public/                     # Static assets
 ```
 
-### web
+## 🔧 Smart Contract Architecture
+### Core Instructions
 
-This is a React app that uses the Anchor generated client to interact with the Solana program.
+1. **`init_perp_config`**: Initialize trading configuration
+   - Set cranker authority
+   - Configure trading fees
+   - Initialize protocol parameters
 
-#### Commands
+2. **`open_position`**: Open a leveraged trading position
+   - Specify position size and leverage
+   - Choose long/short direction
+   - Transfer collateral to vault
 
-Start the web app
+3. **`close_position`**: Close an existing position
+   - Calculate P&L
+   - Transfer funds back to trader
+   - Update position state
 
-```shell
-pnpm dev
-```
+### State Management
 
-Build the web app
+- **Config**: Global protocol configuration and fee structure
+- **Position**: Individual trading position data with P&L tracking
+- **Vault**: Secure collateral management and custody
 
-```shell
-pnpm build
-```
+### Risk & Oracle Systems
+
+- **Pyth Price Feeds**: Real-time, high-frequency price data with staleness validation
+- **Liquidation Engine**: Automated position liquidation when collateral falls below requirements
+- **Access Controls**: Role-based permissions for administrative and trading operations
+
+
+## 🔐 Security Considerations
+
+- **Oracle Security**: Uses Pyth Network for tamper-resistant price feeds
+- **Access Control**: Proper authority checks for all sensitive operations
+- **Arithmetic Safety**: Rust's built-in overflow protection
+- **State Validation**: Comprehensive input validation and state checks
+
+> ⚠️ **Warning:**
+> This project has **not been audited** and is intended for **educational and research purposes only**.
+> **Do not use on Solana mainnet or with real funds.**
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🚧 Roadmap
+
+- [ ] Frontend webapp generation
+- [ ] Funding rate distributions
+- [ ] Platform fees calculations
+
+---
+
+Built with ❤️ on Solana
