@@ -5,6 +5,7 @@
     "anchor-build": "cd anchor && anchor build",
     "anchor-localnet": "cd anchor && anchor localnet",
     "anchor-test": "cd anchor && anchor test",
+    "anchor-test-skip-val": "cd anchor && anchor test --skip-local-validator",
     "build": "next build",
     "codama:js": "codama run js -c ./anchor/codama.js",
     "ci": "npm run build && npm run lint && npm run format:check && npm run codama:js",
@@ -30,6 +31,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@pythnetwork/pyth-solana-receiver": "^0.11.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.7",

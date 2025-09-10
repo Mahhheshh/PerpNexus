@@ -7,3 +7,5 @@
  */
 
 export * from './perpNexusConfig';
+export * from './position';
+export * from './priceUpdateV2';

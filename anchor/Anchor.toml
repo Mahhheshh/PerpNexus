@@ -17,3 +17,13 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "vitest"
+
+# [test.validator]
+# url = "https://api.devnet.solana.com"
+
+# [test]
+# startup_wait = 10000
+# shutdown_wait = 2000
+
+# [[test.validator.clone]]
+# address = "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"

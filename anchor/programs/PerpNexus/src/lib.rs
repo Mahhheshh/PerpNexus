@@ -16,4 +16,10 @@ pub mod PerpNexus {
         ctx.accounts.init_config(cranker, fees, &ctx.bumps)?;
         Ok(())
     }
+    pub fn open_position(ctx: Context<OpenPosition>, position_index: u64, amount: u64, call: Call, leverage: u8) -> Result<()> {
+
+        ctx.accounts.open_position(amount, position_index, call, leverage, ctx.bumps.position)?;
+        ctx.accounts.transfer_to_vault(amount)?;
+        Ok(())
+    }
 }

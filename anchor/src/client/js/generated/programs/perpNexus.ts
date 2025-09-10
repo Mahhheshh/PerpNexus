@@ -13,13 +13,18 @@ import {
   type Address,
   type ReadonlyUint8Array,
 } from 'gill';
-import { type ParsedInitPerpConfigInstruction } from '../instructions';
+import {
+  type ParsedInitPerpConfigInstruction,
+  type ParsedOpenPositionInstruction,
+} from '../instructions';
 
 export const PERP_NEXUS_PROGRAM_ADDRESS =
   'BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9' as Address<'BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9'>;
 
 export enum PerpNexusAccount {
   PerpNexusConfig,
+  Position,
+  PriceUpdateV2,
 }
 
 export function identifyPerpNexusAccount(
@@ -37,6 +42,28 @@ export function identifyPerpNexusAccount(
   ) {
     return PerpNexusAccount.PerpNexusConfig;
   }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([170, 188, 143, 228, 122, 64, 247, 208])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusAccount.Position;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([34, 241, 35, 99, 157, 126, 244, 205])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusAccount.PriceUpdateV2;
+  }
   throw new Error(
     'The provided account could not be identified as a perpNexus account.'
   );
@@ -44,6 +71,7 @@ export function identifyPerpNexusAccount(
 
 export enum PerpNexusInstruction {
   InitPerpConfig,
+  OpenPosition,
 }
 
 export function identifyPerpNexusInstruction(
@@ -61,6 +89,17 @@ export function identifyPerpNexusInstruction(
   ) {
     return PerpNexusInstruction.InitPerpConfig;
   }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([135, 128, 47, 77, 15, 152, 240, 49])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusInstruction.OpenPosition;
+  }
   throw new Error(
     'The provided instruction could not be identified as a perpNexus instruction.'
   );
@@ -68,6 +107,10 @@ export function identifyPerpNexusInstruction(
 
 export type ParsedPerpNexusInstruction<
   TProgram extends string = 'BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9',
-> = {
-  instructionType: PerpNexusInstruction.InitPerpConfig;
-} & ParsedInitPerpConfigInstruction<TProgram>;
+> =
+  | ({
+      instructionType: PerpNexusInstruction.InitPerpConfig;
+    } & ParsedInitPerpConfigInstruction<TProgram>)
+  | ({
+      instructionType: PerpNexusInstruction.OpenPosition;
+    } & ParsedOpenPositionInstruction<TProgram>);
