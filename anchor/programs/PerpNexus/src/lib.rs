@@ -17,9 +17,14 @@ pub mod PerpNexus {
         Ok(())
     }
     pub fn open_position(ctx: Context<OpenPosition>, position_index: u64, amount: u64, call: Call, leverage: u8) -> Result<()> {
-
         ctx.accounts.open_position(amount, position_index, call, leverage, ctx.bumps.position)?;
         ctx.accounts.transfer_to_vault(amount)?;
         Ok(())
     }
+
+    pub fn clsoe_position(ctx: Context<ClosePosition>, position_index: u64) -> Result<()> {
+        ctx.accounts.transfer_to_trader(ctx.bumps.protocol_vault)?;
+        Ok(())
+    }
+
 }

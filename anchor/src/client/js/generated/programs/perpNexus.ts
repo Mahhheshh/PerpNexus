@@ -14,6 +14,7 @@ import {
   type ReadonlyUint8Array,
 } from 'gill';
 import {
+  type ParsedClsoePositionInstruction,
   type ParsedInitPerpConfigInstruction,
   type ParsedOpenPositionInstruction,
 } from '../instructions';
@@ -70,6 +71,7 @@ export function identifyPerpNexusAccount(
 }
 
 export enum PerpNexusInstruction {
+  ClsoePosition,
   InitPerpConfig,
   OpenPosition,
 }
@@ -78,6 +80,17 @@ export function identifyPerpNexusInstruction(
   instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array
 ): PerpNexusInstruction {
   const data = 'data' in instruction ? instruction.data : instruction;
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([72, 218, 187, 124, 254, 239, 162, 231])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusInstruction.ClsoePosition;
+  }
   if (
     containsBytes(
       data,
@@ -108,6 +121,9 @@ export function identifyPerpNexusInstruction(
 export type ParsedPerpNexusInstruction<
   TProgram extends string = 'BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9',
 > =
+  | ({
+      instructionType: PerpNexusInstruction.ClsoePosition;
+    } & ParsedClsoePositionInstruction<TProgram>)
   | ({
       instructionType: PerpNexusInstruction.InitPerpConfig;
     } & ParsedInitPerpConfigInstruction<TProgram>)

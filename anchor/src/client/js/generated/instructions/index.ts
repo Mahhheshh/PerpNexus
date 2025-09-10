@@ -6,5 +6,6 @@
  * @see https://github.com/codama-idl/codama
  */
 
+export * from './clsoePosition';
 export * from './initPerpConfig';
 export * from './openPosition';

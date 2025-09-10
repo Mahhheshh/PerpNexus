@@ -44,13 +44,15 @@ impl<'info> OpenPosition<'info> {
     ) -> Result<()> {
         let price_update = &mut self.price_update;
 
-        let maximum_age: u64 = 300; // TODO: only for localnet testing
+        // let maximum_age: u64 = 300; // TODO: only for localnet testing
 
         let feed_id: [u8; 32] = get_feed_id_from_hex(
             "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d",
         )?;
-        let entry_price =
-            price_update.get_price_no_older_than(&Clock::get()?, maximum_age, &feed_id)?;
+
+        // let entry_price = price_update.get_price_no_older_than(&Clock::get()?, maximum_age, &feed_id)?;
+        // NOTE: ONLY FOR LOCALNET TESTING DO NOY USE IN DEVNET
+        let entry_price = price_update.get_price_unchecked(&feed_id)?;
         let entry_price = entry_price.price;
 
         let _ = self.position.set_inner(Position {

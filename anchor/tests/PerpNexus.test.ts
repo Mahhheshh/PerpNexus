@@ -11,11 +11,12 @@ import {
   getAddressEncoder,
   LAMPORTS_PER_SOL,
 } from 'gill'
-import { Call, fetchPerpNexusConfig, fetchPosition, getInitPerpConfigInstruction, getOpenPositionInstruction, getPerpNexusProgramId } from '../src'
+import { Call, fetchPerpNexusConfig, fetchPosition, getClsoePositionInstruction, getInitPerpConfigInstruction, getOpenPositionInstruction, getPerpNexusProgramId } from '../src'
 import { loadKeypairSignerFromFile } from 'gill/node'
 import { describe, it, expect, beforeAll } from 'vitest'
+import { assert } from 'console'
 
-const { rpc, sendAndConfirmTransaction } = createSolanaClient({ urlOrMoniker: process.env.ANCHOR_PROVIDER_URL! })
+const { rpc, sendAndConfirmTransaction } = createSolanaClient({ urlOrMoniker: "http://localhost:8899" })
 
 // Helper function to keep the tests DRY
 let latestBlockhash: Awaited<ReturnType<typeof getLatestBlockhash>> | undefined
@@ -85,8 +86,12 @@ describe('PerpNexus', () => {
 
     // airdrop
     const airdrop = rpc.requestAirdrop(trader_one.address, 5 * LAMPORTS_PER_SOL as any);
-    const sig = await airdrop.send();
-    console.log(sig);
+    await airdrop.send();
+
+    // fund the protocol vault
+    const protocolVaultDrop = rpc.requestAirdrop(protocolVault, 5 * LAMPORTS_PER_SOL as any);
+    await protocolVaultDrop.send();
+
     console.log('--------------------------------');
     console.log('payer', payer.address);
     console.log('cranker', cranker.address);
@@ -144,7 +149,7 @@ describe('PerpNexus', () => {
       call: trader_one_call
     })
 
-    await sendAndConfirm({ ix: open_position_ix, payer });
+    await sendAndConfirm({ ix: open_position_ix, payer: trader_one });
 
     const positionAccount = await fetchPosition(rpc, position);
 
@@ -153,6 +158,27 @@ describe('PerpNexus', () => {
     expect(positionAccount.data.positionIndex.toString()).toBe(positionIndex.toString());
     expect(positionAccount.data.trader.toString()).toBe(trader_one.address.toString());
     expect(positionAccount.data.call).toBe(trader_one_call);
-    console.log('price of entry', Number(positionAccount.data.entryPrice));
+  })
+
+  // This needs to be run using the bankrun.
+  it.skip("should close a position for trader", async () => {
+    // Not implemented: This test requires bankrun and is intentionally skipped.
+    // await new Promise(resolve => setTimeout(resolve, 50_000));
+    // const positionIndex = 0;
+
+    // const position = await getPositionAddress(programAddress, trader_one.address, positionIndex);
+    // console.log("position pda", position);
+    // const open_position_ix = getClsoePositionInstruction({
+    //   trader: trader_one,
+    //   position,
+    //   protocolVault,
+    //   priceUpdate: priceUpdateAccount,
+    //   positionIndex,
+    // })
+
+    // await sendAndConfirm({ ix: open_position_ix, payer: trader_one });
+
+    // const positionAccount = await fetchPosition(rpc, position);
+    throw new Error("Not implemented: requires bankrun test suite");
   })
 })

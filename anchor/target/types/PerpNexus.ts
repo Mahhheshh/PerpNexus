@@ -14,6 +14,86 @@ export type PerpNexus = {
   },
   "instructions": [
     {
+      "name": "clsoePosition",
+      "discriminator": [
+        72,
+        218,
+        187,
+        124,
+        254,
+        239,
+        162,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              },
+              {
+                "kind": "arg",
+                "path": "positionIndex"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocolVault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "priceUpdate"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "positionIndex",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "initPerpConfig",
       "discriminator": [
         243,
