@@ -158,6 +158,54 @@
       ]
     },
     {
+      "name": "init_trader_profile",
+      "discriminator": [
+        13,
+        6,
+        248,
+        22,
+        15,
+        213,
+        13,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "trader_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "open_position",
       "discriminator": [
         135,
@@ -292,6 +340,19 @@
         126,
         244,
         205
+      ]
+    },
+    {
+      "name": "TraderProfile",
+      "discriminator": [
+        99,
+        135,
+        170,
+        100,
+        49,
+        79,
+        225,
+        169
       ]
     }
   ],
@@ -481,6 +542,34 @@
           {
             "name": "posted_slot",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TraderProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "position_index",
+            "type": "u64"
+          },
+          {
+            "name": "unrealized_pnl",
+            "type": "i64"
+          },
+          {
+            "name": "funding_fees",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

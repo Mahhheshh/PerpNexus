@@ -16,6 +16,7 @@ import {
 import {
   type ParsedClsoePositionInstruction,
   type ParsedInitPerpConfigInstruction,
+  type ParsedInitTraderProfileInstruction,
   type ParsedOpenPositionInstruction,
 } from '../instructions';
 
@@ -26,6 +27,7 @@ export enum PerpNexusAccount {
   PerpNexusConfig,
   Position,
   PriceUpdateV2,
+  TraderProfile,
 }
 
 export function identifyPerpNexusAccount(
@@ -65,6 +67,17 @@ export function identifyPerpNexusAccount(
   ) {
     return PerpNexusAccount.PriceUpdateV2;
   }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([99, 135, 170, 100, 49, 79, 225, 169])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusAccount.TraderProfile;
+  }
   throw new Error(
     'The provided account could not be identified as a perpNexus account.'
   );
@@ -73,6 +86,7 @@ export function identifyPerpNexusAccount(
 export enum PerpNexusInstruction {
   ClsoePosition,
   InitPerpConfig,
+  InitTraderProfile,
   OpenPosition,
 }
 
@@ -106,6 +120,17 @@ export function identifyPerpNexusInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([13, 6, 248, 22, 15, 213, 13, 110])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusInstruction.InitTraderProfile;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([135, 128, 47, 77, 15, 152, 240, 49])
       ),
       0
@@ -127,6 +152,9 @@ export type ParsedPerpNexusInstruction<
   | ({
       instructionType: PerpNexusInstruction.InitPerpConfig;
     } & ParsedInitPerpConfigInstruction<TProgram>)
+  | ({
+      instructionType: PerpNexusInstruction.InitTraderProfile;
+    } & ParsedInitTraderProfileInstruction<TProgram>)
   | ({
       instructionType: PerpNexusInstruction.OpenPosition;
     } & ParsedOpenPositionInstruction<TProgram>);

@@ -164,6 +164,54 @@ export type PerpNexus = {
       ]
     },
     {
+      "name": "initTraderProfile",
+      "discriminator": [
+        13,
+        6,
+        248,
+        22,
+        15,
+        213,
+        13,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "traderProfile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "openPosition",
       "discriminator": [
         135,
@@ -298,6 +346,19 @@ export type PerpNexus = {
         126,
         244,
         205
+      ]
+    },
+    {
+      "name": "traderProfile",
+      "discriminator": [
+        99,
+        135,
+        170,
+        100,
+        49,
+        79,
+        225,
+        169
       ]
     }
   ],
@@ -487,6 +548,34 @@ export type PerpNexus = {
           {
             "name": "postedSlot",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "traderProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "positionIndex",
+            "type": "u64"
+          },
+          {
+            "name": "unrealizedPnl",
+            "type": "i64"
+          },
+          {
+            "name": "fundingFees",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

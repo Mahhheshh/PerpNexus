@@ -8,4 +8,5 @@
 
 export * from './clsoePosition';
 export * from './initPerpConfig';
+export * from './initTraderProfile';
 export * from './openPosition';
