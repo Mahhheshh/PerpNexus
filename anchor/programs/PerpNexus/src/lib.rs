@@ -35,7 +35,7 @@ pub mod PerpNexus {
         Ok(())
     }
 
-    pub fn clsoe_position(ctx: Context<ClosePosition>, position_index: u64) -> Result<()> {
+    pub fn close_position(ctx: Context<ClosePosition>, position_index: u64) -> Result<()> {
         ctx.accounts.transfer_to_trader(ctx.bumps.protocol_vault)?;
         Ok(())
     }

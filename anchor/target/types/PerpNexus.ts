@@ -14,16 +14,16 @@ export type PerpNexus = {
   },
   "instructions": [
     {
-      "name": "clsoePosition",
+      "name": "closePosition",
       "discriminator": [
-        72,
-        218,
-        187,
-        124,
-        254,
-        239,
-        162,
-        231
+        123,
+        134,
+        81,
+        0,
+        49,
+        68,
+        98,
+        98
       ],
       "accounts": [
         {

@@ -42,17 +42,17 @@ import {
   type ResolvedAccount,
 } from '../shared';
 
-export const CLSOE_POSITION_DISCRIMINATOR = new Uint8Array([
-  72, 218, 187, 124, 254, 239, 162, 231,
+export const CLOSE_POSITION_DISCRIMINATOR = new Uint8Array([
+  123, 134, 81, 0, 49, 68, 98, 98,
 ]);
 
-export function getClsoePositionDiscriminatorBytes() {
+export function getClosePositionDiscriminatorBytes() {
   return fixEncoderSize(getBytesEncoder(), 8).encode(
-    CLSOE_POSITION_DISCRIMINATOR
+    CLOSE_POSITION_DISCRIMINATOR
   );
 }
 
-export type ClsoePositionInstruction<
+export type ClosePositionInstruction<
   TProgram extends string = typeof PERP_NEXUS_PROGRAM_ADDRESS,
   TAccountTrader extends string | AccountMeta<string> = string,
   TAccountPosition extends string | AccountMeta<string> = string,
@@ -86,43 +86,43 @@ export type ClsoePositionInstruction<
     ]
   >;
 
-export type ClsoePositionInstructionData = {
+export type ClosePositionInstructionData = {
   discriminator: ReadonlyUint8Array;
   positionIndex: bigint;
 };
 
-export type ClsoePositionInstructionDataArgs = {
+export type ClosePositionInstructionDataArgs = {
   positionIndex: number | bigint;
 };
 
-export function getClsoePositionInstructionDataEncoder(): FixedSizeEncoder<ClsoePositionInstructionDataArgs> {
+export function getClosePositionInstructionDataEncoder(): FixedSizeEncoder<ClosePositionInstructionDataArgs> {
   return transformEncoder(
     getStructEncoder([
       ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
       ['positionIndex', getU64Encoder()],
     ]),
-    (value) => ({ ...value, discriminator: CLSOE_POSITION_DISCRIMINATOR })
+    (value) => ({ ...value, discriminator: CLOSE_POSITION_DISCRIMINATOR })
   );
 }
 
-export function getClsoePositionInstructionDataDecoder(): FixedSizeDecoder<ClsoePositionInstructionData> {
+export function getClosePositionInstructionDataDecoder(): FixedSizeDecoder<ClosePositionInstructionData> {
   return getStructDecoder([
     ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
     ['positionIndex', getU64Decoder()],
   ]);
 }
 
-export function getClsoePositionInstructionDataCodec(): FixedSizeCodec<
-  ClsoePositionInstructionDataArgs,
-  ClsoePositionInstructionData
+export function getClosePositionInstructionDataCodec(): FixedSizeCodec<
+  ClosePositionInstructionDataArgs,
+  ClosePositionInstructionData
 > {
   return combineCodec(
-    getClsoePositionInstructionDataEncoder(),
-    getClsoePositionInstructionDataDecoder()
+    getClosePositionInstructionDataEncoder(),
+    getClosePositionInstructionDataDecoder()
   );
 }
 
-export type ClsoePositionAsyncInput<
+export type ClosePositionAsyncInput<
   TAccountTrader extends string = string,
   TAccountPosition extends string = string,
   TAccountProtocolVault extends string = string,
@@ -134,10 +134,10 @@ export type ClsoePositionAsyncInput<
   protocolVault?: Address<TAccountProtocolVault>;
   priceUpdate: Address<TAccountPriceUpdate>;
   systemProgram?: Address<TAccountSystemProgram>;
-  positionIndex: ClsoePositionInstructionDataArgs['positionIndex'];
+  positionIndex: ClosePositionInstructionDataArgs['positionIndex'];
 };
 
-export async function getClsoePositionInstructionAsync<
+export async function getClosePositionInstructionAsync<
   TAccountTrader extends string,
   TAccountPosition extends string,
   TAccountProtocolVault extends string,
@@ -145,7 +145,7 @@ export async function getClsoePositionInstructionAsync<
   TAccountSystemProgram extends string,
   TProgramAddress extends Address = typeof PERP_NEXUS_PROGRAM_ADDRESS,
 >(
-  input: ClsoePositionAsyncInput<
+  input: ClosePositionAsyncInput<
     TAccountTrader,
     TAccountPosition,
     TAccountProtocolVault,
@@ -154,7 +154,7 @@ export async function getClsoePositionInstructionAsync<
   >,
   config?: { programAddress?: TProgramAddress }
 ): Promise<
-  ClsoePositionInstruction<
+  ClosePositionInstruction<
     TProgramAddress,
     TAccountTrader,
     TAccountPosition,
@@ -218,10 +218,10 @@ export async function getClsoePositionInstructionAsync<
       getAccountMeta(accounts.systemProgram),
     ],
     programAddress,
-    data: getClsoePositionInstructionDataEncoder().encode(
-      args as ClsoePositionInstructionDataArgs
+    data: getClosePositionInstructionDataEncoder().encode(
+      args as ClosePositionInstructionDataArgs
     ),
-  } as ClsoePositionInstruction<
+  } as ClosePositionInstruction<
     TProgramAddress,
     TAccountTrader,
     TAccountPosition,
@@ -233,7 +233,7 @@ export async function getClsoePositionInstructionAsync<
   return instruction;
 }
 
-export type ClsoePositionInput<
+export type ClosePositionInput<
   TAccountTrader extends string = string,
   TAccountPosition extends string = string,
   TAccountProtocolVault extends string = string,
@@ -245,10 +245,10 @@ export type ClsoePositionInput<
   protocolVault: Address<TAccountProtocolVault>;
   priceUpdate: Address<TAccountPriceUpdate>;
   systemProgram?: Address<TAccountSystemProgram>;
-  positionIndex: ClsoePositionInstructionDataArgs['positionIndex'];
+  positionIndex: ClosePositionInstructionDataArgs['positionIndex'];
 };
 
-export function getClsoePositionInstruction<
+export function getClosePositionInstruction<
   TAccountTrader extends string,
   TAccountPosition extends string,
   TAccountProtocolVault extends string,
@@ -256,7 +256,7 @@ export function getClsoePositionInstruction<
   TAccountSystemProgram extends string,
   TProgramAddress extends Address = typeof PERP_NEXUS_PROGRAM_ADDRESS,
 >(
-  input: ClsoePositionInput<
+  input: ClosePositionInput<
     TAccountTrader,
     TAccountPosition,
     TAccountProtocolVault,
@@ -264,7 +264,7 @@ export function getClsoePositionInstruction<
     TAccountSystemProgram
   >,
   config?: { programAddress?: TProgramAddress }
-): ClsoePositionInstruction<
+): ClosePositionInstruction<
   TProgramAddress,
   TAccountTrader,
   TAccountPosition,
@@ -307,10 +307,10 @@ export function getClsoePositionInstruction<
       getAccountMeta(accounts.systemProgram),
     ],
     programAddress,
-    data: getClsoePositionInstructionDataEncoder().encode(
-      args as ClsoePositionInstructionDataArgs
+    data: getClosePositionInstructionDataEncoder().encode(
+      args as ClosePositionInstructionDataArgs
     ),
-  } as ClsoePositionInstruction<
+  } as ClosePositionInstruction<
     TProgramAddress,
     TAccountTrader,
     TAccountPosition,
@@ -322,7 +322,7 @@ export function getClsoePositionInstruction<
   return instruction;
 }
 
-export type ParsedClsoePositionInstruction<
+export type ParsedClosePositionInstruction<
   TProgram extends string = typeof PERP_NEXUS_PROGRAM_ADDRESS,
   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
@@ -334,17 +334,17 @@ export type ParsedClsoePositionInstruction<
     priceUpdate: TAccountMetas[3];
     systemProgram: TAccountMetas[4];
   };
-  data: ClsoePositionInstructionData;
+  data: ClosePositionInstructionData;
 };
 
-export function parseClsoePositionInstruction<
+export function parseClosePositionInstruction<
   TProgram extends string,
   TAccountMetas extends readonly AccountMeta[],
 >(
   instruction: Instruction<TProgram> &
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>
-): ParsedClsoePositionInstruction<TProgram, TAccountMetas> {
+): ParsedClosePositionInstruction<TProgram, TAccountMetas> {
   if (instruction.accounts.length < 5) {
     // TODO: Coded error.
     throw new Error('Not enough accounts');
@@ -364,6 +364,6 @@ export function parseClsoePositionInstruction<
       priceUpdate: getNextAccount(),
       systemProgram: getNextAccount(),
     },
-    data: getClsoePositionInstructionDataDecoder().decode(instruction.data),
+    data: getClosePositionInstructionDataDecoder().decode(instruction.data),
   };
 }

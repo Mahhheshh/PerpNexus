@@ -16,7 +16,7 @@ import {
   fetchPerpNexusConfig,
   fetchPosition,
   fetchTraderProfile,
-  getClsoePositionInstruction,
+  getClosePositionInstruction,
   getInitPerpConfigInstruction,
   getInitTraderProfileInstruction,
   getOpenPositionInstruction,
@@ -245,22 +245,19 @@ describe('PerpNexus', () => {
   // This needs to be run using the bankrun.
   it.skip('should close a position for trader', async () => {
     // Not implemented: This test requires bankrun and is intentionally skipped.
-    // await new Promise(resolve => setTimeout(resolve, 50_000));
-    // const positionIndex = 0;
+    const positionIndex = 0;
+    const position = await getPositionAddress(programAddress, trader_one.address, positionIndex);
 
-    // const position = await getPositionAddress(programAddress, trader_one.address, positionIndex);
-    // console.log("position pda", position);
-    // const open_position_ix = getClsoePositionInstruction({
-    //   trader: trader_one,
-    //   position,
-    //   protocolVault,
-    //   priceUpdate: priceUpdateAccount,
-    //   positionIndex,
-    // })
+    const open_position_ix = getClosePositionInstruction({
+      trader: trader_one,
+      position,
+      protocolVault,
+      priceUpdate: priceUpdateAccount,
+      positionIndex,
+    })
 
-    // await sendAndConfirm({ ix: open_position_ix, payer: trader_one });
+    await sendAndConfirm({ ix: open_position_ix, payer: trader_one });
 
-    // const positionAccount = await fetchPosition(rpc, position);
-    throw new Error('Not implemented: requires bankrun test suite')
+    await expect(async () => await fetchPosition(rpc, position)).rejects.toThrow();
   })
 })

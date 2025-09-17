@@ -14,7 +14,7 @@ import {
   type ReadonlyUint8Array,
 } from 'gill';
 import {
-  type ParsedClsoePositionInstruction,
+  type ParsedClosePositionInstruction,
   type ParsedInitPerpConfigInstruction,
   type ParsedInitTraderProfileInstruction,
   type ParsedOpenPositionInstruction,
@@ -85,7 +85,7 @@ export function identifyPerpNexusAccount(
 }
 
 export enum PerpNexusInstruction {
-  ClsoePosition,
+  ClosePosition,
   InitPerpConfig,
   InitTraderProfile,
   OpenPosition,
@@ -100,12 +100,12 @@ export function identifyPerpNexusInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([72, 218, 187, 124, 254, 239, 162, 231])
+        new Uint8Array([123, 134, 81, 0, 49, 68, 98, 98])
       ),
       0
     )
   ) {
-    return PerpNexusInstruction.ClsoePosition;
+    return PerpNexusInstruction.ClosePosition;
   }
   if (
     containsBytes(
@@ -160,8 +160,8 @@ export type ParsedPerpNexusInstruction<
   TProgram extends string = 'BKRPzmuiy84FuBdbbjAa1Nk8LJ2CKekVhJXi1NqTxCh9',
 > =
   | ({
-      instructionType: PerpNexusInstruction.ClsoePosition;
-    } & ParsedClsoePositionInstruction<TProgram>)
+      instructionType: PerpNexusInstruction.ClosePosition;
+    } & ParsedClosePositionInstruction<TProgram>)
   | ({
       instructionType: PerpNexusInstruction.InitPerpConfig;
     } & ParsedInitPerpConfigInstruction<TProgram>)
