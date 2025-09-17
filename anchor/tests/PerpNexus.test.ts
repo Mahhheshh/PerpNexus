@@ -21,6 +21,7 @@ import {
   getInitTraderProfileInstruction,
   getOpenPositionInstruction,
   getPerpNexusProgramId,
+  getUpdateFundingFeesInstruction,
 } from '../src'
 import { loadKeypairSignerFromFile } from 'gill/node'
 import { describe, it, expect, beforeAll } from 'vitest'
@@ -28,11 +29,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 const { rpc, sendAndConfirmTransaction } = createSolanaClient({ urlOrMoniker: 'http://localhost:8899' })
 
 // Helper function to keep the tests DRY
-let latestBlockhash: Awaited<ReturnType<typeof getLatestBlockhash>> | undefined
 async function getLatestBlockhash(): Promise<Readonly<{ blockhash: Blockhash; lastValidBlockHeight: bigint }>> {
-  if (latestBlockhash) {
-    return latestBlockhash
-  }
   return await rpc
     .getLatestBlockhash()
     .send()
@@ -43,11 +40,11 @@ async function sendAndConfirm({ ix, payer }: { ix: Instruction; payer: KeyPairSi
     feePayer: payer,
     instructions: [ix],
     version: 'legacy',
-    latestBlockhash: await getLatestBlockhash(),
+    latestBlockhash: await getLatestBlockhash()
   })
   const signedTransaction = await signTransactionMessageWithSigners(tx)
   return await sendAndConfirmTransaction(signedTransaction, {
-    skipPreflight: true,
+    skipPreflight: false,
     commitment: 'confirmed',
   })
 }
@@ -96,9 +93,9 @@ describe('PerpNexus', () => {
 
   beforeAll(async () => {
     payer = await loadKeypairSignerFromFile(process.env.ANCHOR_WALLET!)
-    cranker = await generateKeyPairSigner()
-    ;[config] = await getProgramDerivedAddress({ programAddress, seeds: ['config'] })
-    ;[protocolVault] = await getProgramDerivedAddress({ programAddress, seeds: ['vault'] })
+    cranker = await generateKeyPairSigner();
+    [config] = await getProgramDerivedAddress({ programAddress, seeds: ['config'] });
+    [protocolVault] = await getProgramDerivedAddress({ programAddress, seeds: ['vault'] })
 
     trader_one = await generateKeyPairSigner()
 
@@ -109,6 +106,9 @@ describe('PerpNexus', () => {
     // fund the protocol vault
     const protocolVaultDrop = rpc.requestAirdrop(protocolVault, (5 * LAMPORTS_PER_SOL) as any)
     await protocolVaultDrop.send()
+
+    const cranckDrop = rpc.requestAirdrop(cranker.address, (5 * LAMPORTS_PER_SOL) as any)
+    await cranckDrop.send()
 
     console.log('--------------------------------')
     console.log('payer', payer.address)
@@ -155,7 +155,7 @@ describe('PerpNexus', () => {
       traderProfile: traderProfileAddress
     })
 
-    await sendAndConfirm({ix: create_profile_ix, payer: trader_one});
+    await sendAndConfirm({ ix: create_profile_ix, payer: trader_one });
 
     const traderOneProfile = await fetchTraderProfile(rpc, traderProfileAddress);
 
@@ -193,6 +193,53 @@ describe('PerpNexus', () => {
     expect(positionAccount.data.positionIndex.toString()).toBe(positionIndex.toString())
     expect(positionAccount.data.trader.toString()).toBe(trader_one.address.toString())
     expect(positionAccount.data.call).toBe(trader_one_call)
+  })
+
+  it("should the funding rate to be positive", async () => {
+    const traderProfileAddress = await getTraderProfile(programAddress, trader_one.address);
+
+    let updatedFundingFees = BigInt(50);
+
+    const traderOneProfileBefore = await fetchTraderProfile(rpc, traderProfileAddress);
+    expect(traderOneProfileBefore.data.fundingFees.toString()).toBe("0");
+
+    const create_funding_rate_ix = getUpdateFundingFeesInstruction({
+      cranker: cranker,
+      config,
+      traderProfile: traderProfileAddress,
+      trader: trader_one.address,
+      updatedFees: updatedFundingFees
+    });
+
+    await sendAndConfirm({ ix: create_funding_rate_ix, payer: cranker });
+
+    const traderOneProfileAfter = await fetchTraderProfile(rpc, traderProfileAddress);
+    expect(traderOneProfileAfter.data.fundingFees).toBe(updatedFundingFees);
+
+    expect(traderOneProfileAfter.data.fundingFees).toBeGreaterThan(traderOneProfileBefore.data.fundingFees);
+  })
+
+  it("should the funding rate to be negative", async () => {
+
+    const traderProfileAddress = await getTraderProfile(programAddress, trader_one.address);
+
+    let updatedFundingFees = BigInt(-50);
+    const traderOneProfileBefore = await fetchTraderProfile(rpc, traderProfileAddress);
+
+    const create_funding_rate_ix = getUpdateFundingFeesInstruction({
+      cranker: cranker,
+      config,
+      traderProfile: traderProfileAddress,
+      trader: trader_one.address,
+      updatedFees: updatedFundingFees
+    });
+
+    await sendAndConfirm({ ix: create_funding_rate_ix, payer: cranker });
+
+    const traderOneProfileAfter = await fetchTraderProfile(rpc, traderProfileAddress);
+
+    expect(traderOneProfileAfter.data.fundingFees).toBe(updatedFundingFees);
+    expect(traderOneProfileAfter.data.fundingFees).toBeLessThan(traderOneProfileBefore.data.fundingFees);
   })
 
   // This needs to be run using the bankrun.

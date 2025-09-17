@@ -39,4 +39,9 @@ pub mod PerpNexus {
         ctx.accounts.transfer_to_trader(ctx.bumps.protocol_vault)?;
         Ok(())
     }
-}
+
+    pub fn update_funding_fees(ctx: Context<UpdateFundingFees>, trader: Pubkey, updated_fees: i64) -> Result<()> {
+        ctx.accounts.update_fees(updated_fees)?;
+        Ok(())
+    }
+ }

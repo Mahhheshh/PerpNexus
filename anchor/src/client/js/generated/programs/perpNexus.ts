@@ -18,6 +18,7 @@ import {
   type ParsedInitPerpConfigInstruction,
   type ParsedInitTraderProfileInstruction,
   type ParsedOpenPositionInstruction,
+  type ParsedUpdateFundingFeesInstruction,
 } from '../instructions';
 
 export const PERP_NEXUS_PROGRAM_ADDRESS =
@@ -88,6 +89,7 @@ export enum PerpNexusInstruction {
   InitPerpConfig,
   InitTraderProfile,
   OpenPosition,
+  UpdateFundingFees,
 }
 
 export function identifyPerpNexusInstruction(
@@ -138,6 +140,17 @@ export function identifyPerpNexusInstruction(
   ) {
     return PerpNexusInstruction.OpenPosition;
   }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([33, 65, 8, 5, 13, 128, 175, 104])
+      ),
+      0
+    )
+  ) {
+    return PerpNexusInstruction.UpdateFundingFees;
+  }
   throw new Error(
     'The provided instruction could not be identified as a perpNexus instruction.'
   );
@@ -157,4 +170,7 @@ export type ParsedPerpNexusInstruction<
     } & ParsedInitTraderProfileInstruction<TProgram>)
   | ({
       instructionType: PerpNexusInstruction.OpenPosition;
-    } & ParsedOpenPositionInstruction<TProgram>);
+    } & ParsedOpenPositionInstruction<TProgram>)
+  | ({
+      instructionType: PerpNexusInstruction.UpdateFundingFees;
+    } & ParsedUpdateFundingFeesInstruction<TProgram>);

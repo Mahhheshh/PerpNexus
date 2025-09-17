@@ -9,3 +9,6 @@ pub use close_position::*;
 
 pub mod init_trader;
 pub use init_trader::*;
+
+pub mod update_funding_fees;
+pub use update_funding_fees::*;
