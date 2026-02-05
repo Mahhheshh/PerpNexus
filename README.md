@@ -1,3 +1,7 @@
+> [!NOTE]
+> **This was a personal learning project** - I'm no longer actively developing it.
+> Feel free to explore the code, but it's incomplete and not production-ready.
+
 # PerpNexus 🚀
 
 A decentralized perpetual futures trading platform built on Solana, featuring leveraged trading with Pyth Network price feeds integration.
@@ -30,21 +34,6 @@ yarn install
 
 ```bash
 npm run setup
-```
-
-## 📦 Available Scripts
-
-### Development Commands
-
-```bash
-# Start the frontend
-npm run dev
-
-# Build the application
-npm run build
-
-# Start production server
-npm start
 ```
 
 ### Anchor/Solana Commands
@@ -125,20 +114,6 @@ npm run ci
 - **Position**: Individual trading position data with P&L tracking
 - **Vault**: Secure collateral management and custody
 
-### Risk & Oracle Systems
-
-- **Pyth Price Feeds**: Real-time, high-frequency price data with staleness validation
-- **Liquidation Engine**: Automated position liquidation when collateral falls below requirements
-- **Access Controls**: Role-based permissions for administrative and trading operations
-
-
-## 🔐 Security Considerations
-
-- **Oracle Security**: Uses Pyth Network for tamper-resistant price feeds
-- **Access Control**: Proper authority checks for all sensitive operations
-- **Arithmetic Safety**: Rust's built-in overflow protection
-- **State Validation**: Comprehensive input validation and state checks
-
 > ⚠️ **Warning:**
 > This project has **not been audited** and is intended for **educational and research purposes only**.
 > **Do not use on Solana mainnet or with real funds.**
@@ -146,13 +121,3 @@ npm run ci
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## 🚧 Roadmap
-
-- [ ] Frontend webapp generation
-- [ ] Funding rate distributions
-- [ ] Platform fees calculations
-
----
-
-Built with ❤️ on Solana
